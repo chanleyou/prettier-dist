@@ -2,7 +2,13 @@
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
   (global = global || self, factory(global.doc = {}));
-}(this, function (exports) { 'use strict';
+}(this, (function (exports) { 'use strict';
+
+  /**
+   * @param {Doc[]} parts
+   * @returns Doc
+   */
+
 
   function concat(parts) {
     // access the internals of a document directly.
@@ -17,6 +23,11 @@
       parts: parts
     };
   }
+  /**
+   * @param {Doc} contents
+   * @returns Doc
+   */
+
 
   function indent(contents) {
 
@@ -25,6 +36,12 @@
       contents: contents
     };
   }
+  /**
+   * @param {number} n
+   * @param {Doc} contents
+   * @returns Doc
+   */
+
 
   function align(n, contents) {
 
@@ -34,6 +51,12 @@
       n: n
     };
   }
+  /**
+   * @param {Doc} contents
+   * @param {object} [opts] - TBD ???
+   * @returns Doc
+   */
+
 
   function group(contents, opts) {
     opts = opts || {};
@@ -46,26 +69,53 @@
       expandedStates: opts.expandedStates
     };
   }
+  /**
+   * @param {Doc} contents
+   * @returns Doc
+   */
+
 
   function dedentToRoot(contents) {
     return align(-Infinity, contents);
   }
+  /**
+   * @param {Doc} contents
+   * @returns Doc
+   */
+
 
   function markAsRoot(contents) {
+    // @ts-ignore - TBD ???:
     return align({
       type: "root"
     }, contents);
   }
+  /**
+   * @param {Doc} contents
+   * @returns Doc
+   */
+
 
   function dedent(contents) {
     return align(-1, contents);
   }
+  /**
+   * @param {Doc[]} states
+   * @param {object} [opts] - TBD ???
+   * @returns Doc
+   */
+
 
   function conditionalGroup(states, opts) {
     return group(states[0], Object.assign(opts || {}, {
       expandedStates: states
     }));
   }
+  /**
+   * @param {Doc[]} parts
+   * @returns Doc
+   */
+
 
   function fill(parts) {
 
@@ -74,6 +124,13 @@
       parts: parts
     };
   }
+  /**
+   * @param {Doc} [breakContents]
+   * @param {Doc} [flatContents]
+   * @param {object} [opts] - TBD ???
+   * @returns Doc
+   */
+
 
   function ifBreak(breakContents, flatContents, opts) {
     opts = opts || {};
@@ -85,6 +142,11 @@
       groupId: opts.groupId
     };
   }
+  /**
+   * @param {Doc} contents
+   * @returns Doc
+   */
+
 
   function lineSuffix(contents) {
 
@@ -123,6 +185,11 @@
     type: "cursor",
     placeholder: Symbol("cursor")
   };
+  /**
+   * @param {Doc} sep
+   * @param {Doc[]} arr
+   * @returns Doc
+   */
 
   function join(sep, arr) {
     var res = [];
@@ -137,6 +204,12 @@
 
     return concat(res);
   }
+  /**
+   * @param {Doc} doc
+   * @param {number} size
+   * @param {number} tabWidth
+   */
+
 
   function addAlignmentToDoc(doc, size, tabWidth) {
     var aligned = doc;
@@ -199,54 +272,56 @@
 
   /* eslint-disable yoda */
 
-  var isFullwidthCodePoint = function isFullwidthCodePoint(x) {
-    if (Number.isNaN(x)) {
+  var isFullwidthCodePoint = function isFullwidthCodePoint(codePoint) {
+    if (Number.isNaN(codePoint)) {
       return false;
-    } // code points are derived from:
+    } // Code points are derived from:
     // http://www.unix.org/Public/UNIDATA/EastAsianWidth.txt
 
 
-    if (x >= 0x1100 && (x <= 0x115f || // Hangul Jamo
-    x === 0x2329 || // LEFT-POINTING ANGLE BRACKET
-    x === 0x232a || // RIGHT-POINTING ANGLE BRACKET
+    if (codePoint >= 0x1100 && (codePoint <= 0x115F || // Hangul Jamo
+    codePoint === 0x2329 || // LEFT-POINTING ANGLE BRACKET
+    codePoint === 0x232A || // RIGHT-POINTING ANGLE BRACKET
     // CJK Radicals Supplement .. Enclosed CJK Letters and Months
-    0x2e80 <= x && x <= 0x3247 && x !== 0x303f || // Enclosed CJK Letters and Months .. CJK Unified Ideographs Extension A
-    0x3250 <= x && x <= 0x4dbf || // CJK Unified Ideographs .. Yi Radicals
-    0x4e00 <= x && x <= 0xa4c6 || // Hangul Jamo Extended-A
-    0xa960 <= x && x <= 0xa97c || // Hangul Syllables
-    0xac00 <= x && x <= 0xd7a3 || // CJK Compatibility Ideographs
-    0xf900 <= x && x <= 0xfaff || // Vertical Forms
-    0xfe10 <= x && x <= 0xfe19 || // CJK Compatibility Forms .. Small Form Variants
-    0xfe30 <= x && x <= 0xfe6b || // Halfwidth and Fullwidth Forms
-    0xff01 <= x && x <= 0xff60 || 0xffe0 <= x && x <= 0xffe6 || // Kana Supplement
-    0x1b000 <= x && x <= 0x1b001 || // Enclosed Ideographic Supplement
-    0x1f200 <= x && x <= 0x1f251 || // CJK Unified Ideographs Extension B .. Tertiary Ideographic Plane
-    0x20000 <= x && x <= 0x3fffd)) {
+    0x2E80 <= codePoint && codePoint <= 0x3247 && codePoint !== 0x303F || // Enclosed CJK Letters and Months .. CJK Unified Ideographs Extension A
+    0x3250 <= codePoint && codePoint <= 0x4DBF || // CJK Unified Ideographs .. Yi Radicals
+    0x4E00 <= codePoint && codePoint <= 0xA4C6 || // Hangul Jamo Extended-A
+    0xA960 <= codePoint && codePoint <= 0xA97C || // Hangul Syllables
+    0xAC00 <= codePoint && codePoint <= 0xD7A3 || // CJK Compatibility Ideographs
+    0xF900 <= codePoint && codePoint <= 0xFAFF || // Vertical Forms
+    0xFE10 <= codePoint && codePoint <= 0xFE19 || // CJK Compatibility Forms .. Small Form Variants
+    0xFE30 <= codePoint && codePoint <= 0xFE6B || // Halfwidth and Fullwidth Forms
+    0xFF01 <= codePoint && codePoint <= 0xFF60 || 0xFFE0 <= codePoint && codePoint <= 0xFFE6 || // Kana Supplement
+    0x1B000 <= codePoint && codePoint <= 0x1B001 || // Enclosed Ideographic Supplement
+    0x1F200 <= codePoint && codePoint <= 0x1F251 || // CJK Unified Ideographs Extension B .. Tertiary Ideographic Plane
+    0x20000 <= codePoint && codePoint <= 0x3FFFD)) {
       return true;
     }
 
     return false;
   };
 
+  var isFullwidthCodePoint_1 = isFullwidthCodePoint;
+  var default_1$1 = isFullwidthCodePoint;
+  isFullwidthCodePoint_1.default = default_1$1;
+
   var emojiRegex = function emojiRegex() {
     // https://mths.be/emoji
-    return /\uD83C\uDFF4(?:\uDB40\uDC67\uDB40\uDC62(?:\uDB40\uDC65\uDB40\uDC6E\uDB40\uDC67|\uDB40\uDC77\uDB40\uDC6C\uDB40\uDC73|\uDB40\uDC73\uDB40\uDC63\uDB40\uDC74)\uDB40\uDC7F|\u200D\u2620\uFE0F)|\uD83D\uDC69\u200D\uD83D\uDC69\u200D(?:\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67]))|\uD83D\uDC68(?:\u200D(?:\u2764\uFE0F\u200D(?:\uD83D\uDC8B\u200D)?\uD83D\uDC68|(?:\uD83D[\uDC68\uDC69])\u200D(?:\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67]))|\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDB0-\uDDB3])|(?:\uD83C[\uDFFB-\uDFFF])\u200D(?:\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDB0-\uDDB3]))|\uD83D\uDC69\u200D(?:\u2764\uFE0F\u200D(?:\uD83D\uDC8B\u200D(?:\uD83D[\uDC68\uDC69])|\uD83D[\uDC68\uDC69])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDB0-\uDDB3])|\uD83D\uDC69\u200D\uD83D\uDC66\u200D\uD83D\uDC66|(?:\uD83D\uDC41\uFE0F\u200D\uD83D\uDDE8|\uD83D\uDC69(?:\uD83C[\uDFFB-\uDFFF])\u200D[\u2695\u2696\u2708]|\uD83D\uDC68(?:(?:\uD83C[\uDFFB-\uDFFF])\u200D[\u2695\u2696\u2708]|\u200D[\u2695\u2696\u2708])|(?:(?:\u26F9|\uD83C[\uDFCB\uDFCC]|\uD83D\uDD75)\uFE0F|\uD83D\uDC6F|\uD83E[\uDD3C\uDDDE\uDDDF])\u200D[\u2640\u2642]|(?:\u26F9|\uD83C[\uDFCB\uDFCC]|\uD83D\uDD75)(?:\uD83C[\uDFFB-\uDFFF])\u200D[\u2640\u2642]|(?:\uD83C[\uDFC3\uDFC4\uDFCA]|\uD83D[\uDC6E\uDC71\uDC73\uDC77\uDC81\uDC82\uDC86\uDC87\uDE45-\uDE47\uDE4B\uDE4D\uDE4E\uDEA3\uDEB4-\uDEB6]|\uD83E[\uDD26\uDD37-\uDD39\uDD3D\uDD3E\uDDB8\uDDB9\uDDD6-\uDDDD])(?:(?:\uD83C[\uDFFB-\uDFFF])\u200D[\u2640\u2642]|\u200D[\u2640\u2642])|\uD83D\uDC69\u200D[\u2695\u2696\u2708])\uFE0F|\uD83D\uDC69\u200D\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67])|\uD83D\uDC69\u200D\uD83D\uDC69\u200D(?:\uD83D[\uDC66\uDC67])|\uD83D\uDC68(?:\u200D(?:(?:\uD83D[\uDC68\uDC69])\u200D(?:\uD83D[\uDC66\uDC67])|\uD83D[\uDC66\uDC67])|\uD83C[\uDFFB-\uDFFF])|\uD83C\uDFF3\uFE0F\u200D\uD83C\uDF08|\uD83D\uDC69\u200D\uD83D\uDC67|\uD83D\uDC69(?:\uD83C[\uDFFB-\uDFFF])\u200D(?:\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDB0-\uDDB3])|\uD83D\uDC69\u200D\uD83D\uDC66|\uD83C\uDDF6\uD83C\uDDE6|\uD83C\uDDFD\uD83C\uDDF0|\uD83C\uDDF4\uD83C\uDDF2|\uD83D\uDC69(?:\uD83C[\uDFFB-\uDFFF])|\uD83C\uDDED(?:\uD83C[\uDDF0\uDDF2\uDDF3\uDDF7\uDDF9\uDDFA])|\uD83C\uDDEC(?:\uD83C[\uDDE6\uDDE7\uDDE9-\uDDEE\uDDF1-\uDDF3\uDDF5-\uDDFA\uDDFC\uDDFE])|\uD83C\uDDEA(?:\uD83C[\uDDE6\uDDE8\uDDEA\uDDEC\uDDED\uDDF7-\uDDFA])|\uD83C\uDDE8(?:\uD83C[\uDDE6\uDDE8\uDDE9\uDDEB-\uDDEE\uDDF0-\uDDF5\uDDF7\uDDFA-\uDDFF])|\uD83C\uDDF2(?:\uD83C[\uDDE6\uDDE8-\uDDED\uDDF0-\uDDFF])|\uD83C\uDDF3(?:\uD83C[\uDDE6\uDDE8\uDDEA-\uDDEC\uDDEE\uDDF1\uDDF4\uDDF5\uDDF7\uDDFA\uDDFF])|\uD83C\uDDFC(?:\uD83C[\uDDEB\uDDF8])|\uD83C\uDDFA(?:\uD83C[\uDDE6\uDDEC\uDDF2\uDDF3\uDDF8\uDDFE\uDDFF])|\uD83C\uDDF0(?:\uD83C[\uDDEA\uDDEC-\uDDEE\uDDF2\uDDF3\uDDF5\uDDF7\uDDFC\uDDFE\uDDFF])|\uD83C\uDDEF(?:\uD83C[\uDDEA\uDDF2\uDDF4\uDDF5])|\uD83C\uDDF8(?:\uD83C[\uDDE6-\uDDEA\uDDEC-\uDDF4\uDDF7-\uDDF9\uDDFB\uDDFD-\uDDFF])|\uD83C\uDDEE(?:\uD83C[\uDDE8-\uDDEA\uDDF1-\uDDF4\uDDF6-\uDDF9])|\uD83C\uDDFF(?:\uD83C[\uDDE6\uDDF2\uDDFC])|\uD83C\uDDEB(?:\uD83C[\uDDEE-\uDDF0\uDDF2\uDDF4\uDDF7])|\uD83C\uDDF5(?:\uD83C[\uDDE6\uDDEA-\uDDED\uDDF0-\uDDF3\uDDF7-\uDDF9\uDDFC\uDDFE])|\uD83C\uDDE9(?:\uD83C[\uDDEA\uDDEC\uDDEF\uDDF0\uDDF2\uDDF4\uDDFF])|\uD83C\uDDF9(?:\uD83C[\uDDE6\uDDE8\uDDE9\uDDEB-\uDDED\uDDEF-\uDDF4\uDDF7\uDDF9\uDDFB\uDDFC\uDDFF])|\uD83C\uDDE7(?:\uD83C[\uDDE6\uDDE7\uDDE9-\uDDEF\uDDF1-\uDDF4\uDDF6-\uDDF9\uDDFB\uDDFC\uDDFE\uDDFF])|[#\*0-9]\uFE0F\u20E3|\uD83C\uDDF1(?:\uD83C[\uDDE6-\uDDE8\uDDEE\uDDF0\uDDF7-\uDDFB\uDDFE])|\uD83C\uDDE6(?:\uD83C[\uDDE8-\uDDEC\uDDEE\uDDF1\uDDF2\uDDF4\uDDF6-\uDDFA\uDDFC\uDDFD\uDDFF])|\uD83C\uDDF7(?:\uD83C[\uDDEA\uDDF4\uDDF8\uDDFA\uDDFC])|\uD83C\uDDFB(?:\uD83C[\uDDE6\uDDE8\uDDEA\uDDEC\uDDEE\uDDF3\uDDFA])|\uD83C\uDDFE(?:\uD83C[\uDDEA\uDDF9])|(?:\uD83C[\uDFC3\uDFC4\uDFCA]|\uD83D[\uDC6E\uDC71\uDC73\uDC77\uDC81\uDC82\uDC86\uDC87\uDE45-\uDE47\uDE4B\uDE4D\uDE4E\uDEA3\uDEB4-\uDEB6]|\uD83E[\uDD26\uDD37-\uDD39\uDD3D\uDD3E\uDDB8\uDDB9\uDDD6-\uDDDD])(?:\uD83C[\uDFFB-\uDFFF])|(?:\u26F9|\uD83C[\uDFCB\uDFCC]|\uD83D\uDD75)(?:\uD83C[\uDFFB-\uDFFF])|(?:[\u261D\u270A-\u270D]|\uD83C[\uDF85\uDFC2\uDFC7]|\uD83D[\uDC42\uDC43\uDC46-\uDC50\uDC66\uDC67\uDC70\uDC72\uDC74-\uDC76\uDC78\uDC7C\uDC83\uDC85\uDCAA\uDD74\uDD7A\uDD90\uDD95\uDD96\uDE4C\uDE4F\uDEC0\uDECC]|\uD83E[\uDD18-\uDD1C\uDD1E\uDD1F\uDD30-\uDD36\uDDB5\uDDB6\uDDD1-\uDDD5])(?:\uD83C[\uDFFB-\uDFFF])|(?:[\u231A\u231B\u23E9-\u23EC\u23F0\u23F3\u25FD\u25FE\u2614\u2615\u2648-\u2653\u267F\u2693\u26A1\u26AA\u26AB\u26BD\u26BE\u26C4\u26C5\u26CE\u26D4\u26EA\u26F2\u26F3\u26F5\u26FA\u26FD\u2705\u270A\u270B\u2728\u274C\u274E\u2753-\u2755\u2757\u2795-\u2797\u27B0\u27BF\u2B1B\u2B1C\u2B50\u2B55]|\uD83C[\uDC04\uDCCF\uDD8E\uDD91-\uDD9A\uDDE6-\uDDFF\uDE01\uDE1A\uDE2F\uDE32-\uDE36\uDE38-\uDE3A\uDE50\uDE51\uDF00-\uDF20\uDF2D-\uDF35\uDF37-\uDF7C\uDF7E-\uDF93\uDFA0-\uDFCA\uDFCF-\uDFD3\uDFE0-\uDFF0\uDFF4\uDFF8-\uDFFF]|\uD83D[\uDC00-\uDC3E\uDC40\uDC42-\uDCFC\uDCFF-\uDD3D\uDD4B-\uDD4E\uDD50-\uDD67\uDD7A\uDD95\uDD96\uDDA4\uDDFB-\uDE4F\uDE80-\uDEC5\uDECC\uDED0-\uDED2\uDEEB\uDEEC\uDEF4-\uDEF9]|\uD83E[\uDD10-\uDD3A\uDD3C-\uDD3E\uDD40-\uDD45\uDD47-\uDD70\uDD73-\uDD76\uDD7A\uDD7C-\uDDA2\uDDB0-\uDDB9\uDDC0-\uDDC2\uDDD0-\uDDFF])|(?:[#\*0-9\xA9\xAE\u203C\u2049\u2122\u2139\u2194-\u2199\u21A9\u21AA\u231A\u231B\u2328\u23CF\u23E9-\u23F3\u23F8-\u23FA\u24C2\u25AA\u25AB\u25B6\u25C0\u25FB-\u25FE\u2600-\u2604\u260E\u2611\u2614\u2615\u2618\u261D\u2620\u2622\u2623\u2626\u262A\u262E\u262F\u2638-\u263A\u2640\u2642\u2648-\u2653\u265F\u2660\u2663\u2665\u2666\u2668\u267B\u267E\u267F\u2692-\u2697\u2699\u269B\u269C\u26A0\u26A1\u26AA\u26AB\u26B0\u26B1\u26BD\u26BE\u26C4\u26C5\u26C8\u26CE\u26CF\u26D1\u26D3\u26D4\u26E9\u26EA\u26F0-\u26F5\u26F7-\u26FA\u26FD\u2702\u2705\u2708-\u270D\u270F\u2712\u2714\u2716\u271D\u2721\u2728\u2733\u2734\u2744\u2747\u274C\u274E\u2753-\u2755\u2757\u2763\u2764\u2795-\u2797\u27A1\u27B0\u27BF\u2934\u2935\u2B05-\u2B07\u2B1B\u2B1C\u2B50\u2B55\u3030\u303D\u3297\u3299]|\uD83C[\uDC04\uDCCF\uDD70\uDD71\uDD7E\uDD7F\uDD8E\uDD91-\uDD9A\uDDE6-\uDDFF\uDE01\uDE02\uDE1A\uDE2F\uDE32-\uDE3A\uDE50\uDE51\uDF00-\uDF21\uDF24-\uDF93\uDF96\uDF97\uDF99-\uDF9B\uDF9E-\uDFF0\uDFF3-\uDFF5\uDFF7-\uDFFF]|\uD83D[\uDC00-\uDCFD\uDCFF-\uDD3D\uDD49-\uDD4E\uDD50-\uDD67\uDD6F\uDD70\uDD73-\uDD7A\uDD87\uDD8A-\uDD8D\uDD90\uDD95\uDD96\uDDA4\uDDA5\uDDA8\uDDB1\uDDB2\uDDBC\uDDC2-\uDDC4\uDDD1-\uDDD3\uDDDC-\uDDDE\uDDE1\uDDE3\uDDE8\uDDEF\uDDF3\uDDFA-\uDE4F\uDE80-\uDEC5\uDECB-\uDED2\uDEE0-\uDEE5\uDEE9\uDEEB\uDEEC\uDEF0\uDEF3-\uDEF9]|\uD83E[\uDD10-\uDD3A\uDD3C-\uDD3E\uDD40-\uDD45\uDD47-\uDD70\uDD73-\uDD76\uDD7A\uDD7C-\uDDA2\uDDB0-\uDDB9\uDDC0-\uDDC2\uDDD0-\uDDFF])\uFE0F|(?:[\u261D\u26F9\u270A-\u270D]|\uD83C[\uDF85\uDFC2-\uDFC4\uDFC7\uDFCA-\uDFCC]|\uD83D[\uDC42\uDC43\uDC46-\uDC50\uDC66-\uDC69\uDC6E\uDC70-\uDC78\uDC7C\uDC81-\uDC83\uDC85-\uDC87\uDCAA\uDD74\uDD75\uDD7A\uDD90\uDD95\uDD96\uDE45-\uDE47\uDE4B-\uDE4F\uDEA3\uDEB4-\uDEB6\uDEC0\uDECC]|\uD83E[\uDD18-\uDD1C\uDD1E\uDD1F\uDD26\uDD30-\uDD39\uDD3D\uDD3E\uDDB5\uDDB6\uDDB8\uDDB9\uDDD1-\uDDDD])/g;
+    return /\uD83C\uDFF4\uDB40\uDC67\uDB40\uDC62(?:\uDB40\uDC65\uDB40\uDC6E\uDB40\uDC67|\uDB40\uDC73\uDB40\uDC63\uDB40\uDC74|\uDB40\uDC77\uDB40\uDC6C\uDB40\uDC73)\uDB40\uDC7F|\uD83D\uDC68(?:\uD83C\uDFFC\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68\uD83C\uDFFB|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFF\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB-\uDFFE])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFE\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB-\uDFFD])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFD\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB\uDFFC])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\u200D(?:\u2764\uFE0F\u200D(?:\uD83D\uDC8B\u200D)?\uD83D\uDC68|(?:\uD83D[\uDC68\uDC69])\u200D(?:\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67]))|\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67])|(?:\uD83D[\uDC68\uDC69])\u200D(?:\uD83D[\uDC66\uDC67])|[\u2695\u2696\u2708]\uFE0F|\uD83D[\uDC66\uDC67]|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|(?:\uD83C\uDFFB\u200D[\u2695\u2696\u2708]|\uD83C\uDFFF\u200D[\u2695\u2696\u2708]|\uD83C\uDFFE\u200D[\u2695\u2696\u2708]|\uD83C\uDFFD\u200D[\u2695\u2696\u2708]|\uD83C\uDFFC\u200D[\u2695\u2696\u2708])\uFE0F|\uD83C\uDFFB\u200D(?:\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C[\uDFFB-\uDFFF])|(?:\uD83E\uDDD1\uD83C\uDFFB\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1|\uD83D\uDC69\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83D\uDC69)\uD83C\uDFFB|\uD83E\uDDD1(?:\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1(?:\uD83C[\uDFFB-\uDFFF])|\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1)|(?:\uD83E\uDDD1\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1|\uD83D\uDC69\uD83C\uDFFF\u200D\uD83E\uDD1D\u200D(?:\uD83D[\uDC68\uDC69]))(?:\uD83C[\uDFFB-\uDFFE])|(?:\uD83E\uDDD1\uD83C\uDFFC\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1|\uD83D\uDC69\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83D\uDC69)(?:\uD83C[\uDFFB\uDFFC])|\uD83D\uDC69(?:\uD83C\uDFFE\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB-\uDFFD\uDFFF])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFC\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB\uDFFD-\uDFFF])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFB\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFC-\uDFFF])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFD\u200D(?:\uD83E\uDD1D\u200D\uD83D\uDC68(?:\uD83C[\uDFFB\uDFFC\uDFFE\uDFFF])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\u200D(?:\u2764\uFE0F\u200D(?:\uD83D\uDC8B\u200D(?:\uD83D[\uDC68\uDC69])|\uD83D[\uDC68\uDC69])|\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD])|\uD83C\uDFFF\u200D(?:\uD83C[\uDF3E\uDF73\uDF93\uDFA4\uDFA8\uDFEB\uDFED]|\uD83D[\uDCBB\uDCBC\uDD27\uDD2C\uDE80\uDE92]|\uD83E[\uDDAF-\uDDB3\uDDBC\uDDBD]))|\uD83D\uDC69\u200D\uD83D\uDC69\u200D(?:\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67]))|(?:\uD83E\uDDD1\uD83C\uDFFD\u200D\uD83E\uDD1D\u200D\uD83E\uDDD1|\uD83D\uDC69\uD83C\uDFFE\u200D\uD83E\uDD1D\u200D\uD83D\uDC69)(?:\uD83C[\uDFFB-\uDFFD])|\uD83D\uDC69\u200D\uD83D\uDC66\u200D\uD83D\uDC66|\uD83D\uDC69\u200D\uD83D\uDC69\u200D(?:\uD83D[\uDC66\uDC67])|(?:\uD83D\uDC41\uFE0F\u200D\uD83D\uDDE8|\uD83D\uDC69(?:\uD83C\uDFFF\u200D[\u2695\u2696\u2708]|\uD83C\uDFFE\u200D[\u2695\u2696\u2708]|\uD83C\uDFFC\u200D[\u2695\u2696\u2708]|\uD83C\uDFFB\u200D[\u2695\u2696\u2708]|\uD83C\uDFFD\u200D[\u2695\u2696\u2708]|\u200D[\u2695\u2696\u2708])|(?:(?:\u26F9|\uD83C[\uDFCB\uDFCC]|\uD83D\uDD75)\uFE0F|\uD83D\uDC6F|\uD83E[\uDD3C\uDDDE\uDDDF])\u200D[\u2640\u2642]|(?:\u26F9|\uD83C[\uDFCB\uDFCC]|\uD83D\uDD75)(?:\uD83C[\uDFFB-\uDFFF])\u200D[\u2640\u2642]|(?:\uD83C[\uDFC3\uDFC4\uDFCA]|\uD83D[\uDC6E\uDC71\uDC73\uDC77\uDC81\uDC82\uDC86\uDC87\uDE45-\uDE47\uDE4B\uDE4D\uDE4E\uDEA3\uDEB4-\uDEB6]|\uD83E[\uDD26\uDD37-\uDD39\uDD3D\uDD3E\uDDB8\uDDB9\uDDCD-\uDDCF\uDDD6-\uDDDD])(?:(?:\uD83C[\uDFFB-\uDFFF])\u200D[\u2640\u2642]|\u200D[\u2640\u2642])|\uD83C\uDFF4\u200D\u2620)\uFE0F|\uD83D\uDC69\u200D\uD83D\uDC67\u200D(?:\uD83D[\uDC66\uDC67])|\uD83C\uDFF3\uFE0F\u200D\uD83C\uDF08|\uD83D\uDC15\u200D\uD83E\uDDBA|\uD83D\uDC69\u200D\uD83D\uDC66|\uD83D\uDC69\u200D\uD83D\uDC67|\uD83C\uDDFD\uD83C\uDDF0|\uD83C\uDDF4\uD83C\uDDF2|\uD83C\uDDF6\uD83C\uDDE6|[#\*0-9]\uFE0F\u20E3|\uD83C\uDDE7(?:\uD83C[\uDDE6\uDDE7\uDDE9-\uDDEF\uDDF1-\uDDF4\uDDF6-\uDDF9\uDDFB\uDDFC\uDDFE\uDDFF])|\uD83C\uDDF9(?:\uD83C[\uDDE6\uDDE8\uDDE9\uDDEB-\uDDED\uDDEF-\uDDF4\uDDF7\uDDF9\uDDFB\uDDFC\uDDFF])|\uD83C\uDDEA(?:\uD83C[\uDDE6\uDDE8\uDDEA\uDDEC\uDDED\uDDF7-\uDDFA])|\uD83E\uDDD1(?:\uD83C[\uDFFB-\uDFFF])|\uD83C\uDDF7(?:\uD83C[\uDDEA\uDDF4\uDDF8\uDDFA\uDDFC])|\uD83D\uDC69(?:\uD83C[\uDFFB-\uDFFF])|\uD83C\uDDF2(?:\uD83C[\uDDE6\uDDE8-\uDDED\uDDF0-\uDDFF])|\uD83C\uDDE6(?:\uD83C[\uDDE8-\uDDEC\uDDEE\uDDF1\uDDF2\uDDF4\uDDF6-\uDDFA\uDDFC\uDDFD\uDDFF])|\uD83C\uDDF0(?:\uD83C[\uDDEA\uDDEC-\uDDEE\uDDF2\uDDF3\uDDF5\uDDF7\uDDFC\uDDFE\uDDFF])|\uD83C\uDDED(?:\uD83C[\uDDF0\uDDF2\uDDF3\uDDF7\uDDF9\uDDFA])|\uD83C\uDDE9(?:\uD83C[\uDDEA\uDDEC\uDDEF\uDDF0\uDDF2\uDDF4\uDDFF])|\uD83C\uDDFE(?:\uD83C[\uDDEA\uDDF9])|\uD83C\uDDEC(?:\uD83C[\uDDE6\uDDE7\uDDE9-\uDDEE\uDDF1-\uDDF3\uDDF5-\uDDFA\uDDFC\uDDFE])|\uD83C\uDDF8(?:\uD83C[\uDDE6-\uDDEA\uDDEC-\uDDF4\uDDF7-\uDDF9\uDDFB\uDDFD-\uDDFF])|\uD83C\uDDEB(?:\uD83C[\uDDEE-\uDDF0\uDDF2\uDDF4\uDDF7])|\uD83C\uDDF5(?:\uD83C[\uDDE6\uDDEA-\uDDED\uDDF0-\uDDF3\uDDF7-\uDDF9\uDDFC\uDDFE])|\uD83C\uDDFB(?:\uD83C[\uDDE6\uDDE8\uDDEA\uDDEC\uDDEE\uDDF3\uDDFA])|\uD83C\uDDF3(?:\uD83C[\uDDE6\uDDE8\uDDEA-\uDDEC\uDDEE\uDDF1\uDDF4\uDDF5\uDDF7\uDDFA\uDDFF])|\uD83C\uDDE8(?:\uD83C[\uDDE6\uDDE8\uDDE9\uDDEB-\uDDEE\uDDF0-\uDDF5\uDDF7\uDDFA-\uDDFF])|\uD83C\uDDF1(?:\uD83C[\uDDE6-\uDDE8\uDDEE\uDDF0\uDDF7-\uDDFB\uDDFE])|\uD83C\uDDFF(?:\uD83C[\uDDE6\uDDF2\uDDFC])|\uD83C\uDDFC(?:\uD83C[\uDDEB\uDDF8])|\uD83C\uDDFA(?:\uD83C[\uDDE6\uDDEC\uDDF2\uDDF3\uDDF8\uDDFE\uDDFF])|\uD83C\uDDEE(?:\uD83C[\uDDE8-\uDDEA\uDDF1-\uDDF4\uDDF6-\uDDF9])|\uD83C\uDDEF(?:\uD83C[\uDDEA\uDDF2\uDDF4\uDDF5])|(?:\uD83C[\uDFC3\uDFC4\uDFCA]|\uD83D[\uDC6E\uDC71\uDC73\uDC77\uDC81\uDC82\uDC86\uDC87\uDE45-\uDE47\uDE4B\uDE4D\uDE4E\uDEA3\uDEB4-\uDEB6]|\uD83E[\uDD26\uDD37-\uDD39\uDD3D\uDD3E\uDDB8\uDDB9\uDDCD-\uDDCF\uDDD6-\uDDDD])(?:\uD83C[\uDFFB-\uDFFF])|(?:\u26F9|\uD83C[\uDFCB\uDFCC]|\uD83D\uDD75)(?:\uD83C[\uDFFB-\uDFFF])|(?:[\u261D\u270A-\u270D]|\uD83C[\uDF85\uDFC2\uDFC7]|\uD83D[\uDC42\uDC43\uDC46-\uDC50\uDC66\uDC67\uDC6B-\uDC6D\uDC70\uDC72\uDC74-\uDC76\uDC78\uDC7C\uDC83\uDC85\uDCAA\uDD74\uDD7A\uDD90\uDD95\uDD96\uDE4C\uDE4F\uDEC0\uDECC]|\uD83E[\uDD0F\uDD18-\uDD1C\uDD1E\uDD1F\uDD30-\uDD36\uDDB5\uDDB6\uDDBB\uDDD2-\uDDD5])(?:\uD83C[\uDFFB-\uDFFF])|(?:[\u231A\u231B\u23E9-\u23EC\u23F0\u23F3\u25FD\u25FE\u2614\u2615\u2648-\u2653\u267F\u2693\u26A1\u26AA\u26AB\u26BD\u26BE\u26C4\u26C5\u26CE\u26D4\u26EA\u26F2\u26F3\u26F5\u26FA\u26FD\u2705\u270A\u270B\u2728\u274C\u274E\u2753-\u2755\u2757\u2795-\u2797\u27B0\u27BF\u2B1B\u2B1C\u2B50\u2B55]|\uD83C[\uDC04\uDCCF\uDD8E\uDD91-\uDD9A\uDDE6-\uDDFF\uDE01\uDE1A\uDE2F\uDE32-\uDE36\uDE38-\uDE3A\uDE50\uDE51\uDF00-\uDF20\uDF2D-\uDF35\uDF37-\uDF7C\uDF7E-\uDF93\uDFA0-\uDFCA\uDFCF-\uDFD3\uDFE0-\uDFF0\uDFF4\uDFF8-\uDFFF]|\uD83D[\uDC00-\uDC3E\uDC40\uDC42-\uDCFC\uDCFF-\uDD3D\uDD4B-\uDD4E\uDD50-\uDD67\uDD7A\uDD95\uDD96\uDDA4\uDDFB-\uDE4F\uDE80-\uDEC5\uDECC\uDED0-\uDED2\uDED5\uDEEB\uDEEC\uDEF4-\uDEFA\uDFE0-\uDFEB]|\uD83E[\uDD0D-\uDD3A\uDD3C-\uDD45\uDD47-\uDD71\uDD73-\uDD76\uDD7A-\uDDA2\uDDA5-\uDDAA\uDDAE-\uDDCA\uDDCD-\uDDFF\uDE70-\uDE73\uDE78-\uDE7A\uDE80-\uDE82\uDE90-\uDE95])|(?:[#\*0-9\xA9\xAE\u203C\u2049\u2122\u2139\u2194-\u2199\u21A9\u21AA\u231A\u231B\u2328\u23CF\u23E9-\u23F3\u23F8-\u23FA\u24C2\u25AA\u25AB\u25B6\u25C0\u25FB-\u25FE\u2600-\u2604\u260E\u2611\u2614\u2615\u2618\u261D\u2620\u2622\u2623\u2626\u262A\u262E\u262F\u2638-\u263A\u2640\u2642\u2648-\u2653\u265F\u2660\u2663\u2665\u2666\u2668\u267B\u267E\u267F\u2692-\u2697\u2699\u269B\u269C\u26A0\u26A1\u26AA\u26AB\u26B0\u26B1\u26BD\u26BE\u26C4\u26C5\u26C8\u26CE\u26CF\u26D1\u26D3\u26D4\u26E9\u26EA\u26F0-\u26F5\u26F7-\u26FA\u26FD\u2702\u2705\u2708-\u270D\u270F\u2712\u2714\u2716\u271D\u2721\u2728\u2733\u2734\u2744\u2747\u274C\u274E\u2753-\u2755\u2757\u2763\u2764\u2795-\u2797\u27A1\u27B0\u27BF\u2934\u2935\u2B05-\u2B07\u2B1B\u2B1C\u2B50\u2B55\u3030\u303D\u3297\u3299]|\uD83C[\uDC04\uDCCF\uDD70\uDD71\uDD7E\uDD7F\uDD8E\uDD91-\uDD9A\uDDE6-\uDDFF\uDE01\uDE02\uDE1A\uDE2F\uDE32-\uDE3A\uDE50\uDE51\uDF00-\uDF21\uDF24-\uDF93\uDF96\uDF97\uDF99-\uDF9B\uDF9E-\uDFF0\uDFF3-\uDFF5\uDFF7-\uDFFF]|\uD83D[\uDC00-\uDCFD\uDCFF-\uDD3D\uDD49-\uDD4E\uDD50-\uDD67\uDD6F\uDD70\uDD73-\uDD7A\uDD87\uDD8A-\uDD8D\uDD90\uDD95\uDD96\uDDA4\uDDA5\uDDA8\uDDB1\uDDB2\uDDBC\uDDC2-\uDDC4\uDDD1-\uDDD3\uDDDC-\uDDDE\uDDE1\uDDE3\uDDE8\uDDEF\uDDF3\uDDFA-\uDE4F\uDE80-\uDEC5\uDECB-\uDED2\uDED5\uDEE0-\uDEE5\uDEE9\uDEEB\uDEEC\uDEF0\uDEF3-\uDEFA\uDFE0-\uDFEB]|\uD83E[\uDD0D-\uDD3A\uDD3C-\uDD45\uDD47-\uDD71\uDD73-\uDD76\uDD7A-\uDDA2\uDDA5-\uDDAA\uDDAE-\uDDCA\uDDCD-\uDDFF\uDE70-\uDE73\uDE78-\uDE7A\uDE80-\uDE82\uDE90-\uDE95])\uFE0F|(?:[\u261D\u26F9\u270A-\u270D]|\uD83C[\uDF85\uDFC2-\uDFC4\uDFC7\uDFCA-\uDFCC]|\uD83D[\uDC42\uDC43\uDC46-\uDC50\uDC66-\uDC78\uDC7C\uDC81-\uDC83\uDC85-\uDC87\uDC8F\uDC91\uDCAA\uDD74\uDD75\uDD7A\uDD90\uDD95\uDD96\uDE45-\uDE47\uDE4B-\uDE4F\uDEA3\uDEB4-\uDEB6\uDEC0\uDECC]|\uD83E[\uDD0F\uDD18-\uDD1F\uDD26\uDD30-\uDD39\uDD3C-\uDD3E\uDDB5\uDDB6\uDDB8\uDDB9\uDDBB\uDDCD-\uDDCF\uDDD1-\uDDDD])/g;
   };
 
-  var emojiRegex$1 = emojiRegex();
+  var stringWidth = function stringWidth(string) {
+    string = string.replace(emojiRegex(), '  ');
 
-  var stringWidth = function stringWidth(input) {
-    input = input.replace(emojiRegex$1, '  ');
-
-    if (typeof input !== 'string' || input.length === 0) {
+    if (typeof string !== 'string' || string.length === 0) {
       return 0;
     }
 
-    input = stripAnsi_1(input);
+    string = stripAnsi_1(string);
     var width = 0;
 
-    for (var i = 0; i < input.length; i++) {
-      var code = input.codePointAt(i); // Ignore control characters
+    for (var i = 0; i < string.length; i++) {
+      var code = string.codePointAt(i); // Ignore control characters
 
       if (code <= 0x1F || code >= 0x7F && code <= 0x9F) {
         continue;
@@ -262,11 +337,16 @@
         i++;
       }
 
-      width += isFullwidthCodePoint(code) ? 2 : 1;
+      width += isFullwidthCodePoint_1(code) ? 2 : 1;
     }
 
     return width;
   };
+
+  var stringWidth_1 = stringWidth; // TODO: remove this in the next major version
+
+  var default_1$2 = stringWidth;
+  stringWidth_1.default = default_1$2;
 
   var matchOperatorsRe = /[|\\{}()[\]^$+*?.]/g;
 
@@ -316,6 +396,15 @@
 
     return null;
   }
+  /**
+   * @typedef {{backwards?: boolean}} SkipOptions
+   */
+
+  /**
+   * @param {string | RegExp} chars
+   * @returns {(text: string, index: number | false, opts?: SkipOptions) => number | false}
+   */
+
 
   function skip(chars) {
     return function (text, index, opts) {
@@ -354,11 +443,32 @@
       return false;
     };
   }
+  /**
+   * @type {(text: string, index: number | false, opts?: SkipOptions) => number | false}
+   */
+
 
   var skipWhitespace = skip(/\s/);
+  /**
+   * @type {(text: string, index: number | false, opts?: SkipOptions) => number | false}
+   */
+
   var skipSpaces = skip(" \t");
+  /**
+   * @type {(text: string, index: number | false, opts?: SkipOptions) => number | false}
+   */
+
   var skipToLineEnd = skip(",; \t");
+  /**
+   * @type {(text: string, index: number | false, opts?: SkipOptions) => number | false}
+   */
+
   var skipEverythingButNewLine = skip(/[^\r\n]/);
+  /**
+   * @param {string} text
+   * @param {number | false} index
+   * @returns {number | false}
+   */
 
   function skipInlineComment(text, index) {
     if (index === false) {
@@ -375,6 +485,12 @@
 
     return index;
   }
+  /**
+   * @param {string} text
+   * @param {number | false} index
+   * @returns {number | false}
+   */
+
 
   function skipTrailingComment(text, index) {
     if (index === false) {
@@ -389,6 +505,13 @@
   } // This one doesn't use the above helper function because it wants to
   // test \r\n in order and `skip` doesn't support ordering and we only
   // want to skip one newline. It's simple to implement.
+
+  /**
+   * @param {string} text
+   * @param {number | false} index
+   * @param {SkipOptions=} opts
+   * @returns {number | false}
+   */
 
 
   function skipNewline(text, index, opts) {
@@ -420,6 +543,13 @@
 
     return index;
   }
+  /**
+   * @param {string} text
+   * @param {number} index
+   * @param {SkipOptions=} opts
+   * @returns {boolean}
+   */
+
 
   function hasNewline(text, index, opts) {
     opts = opts || {};
@@ -427,6 +557,13 @@
     var idx2 = skipNewline(text, idx, opts);
     return idx !== idx2;
   }
+  /**
+   * @param {string} text
+   * @param {number} start
+   * @param {number} end
+   * @returns {boolean}
+   */
+
 
   function hasNewlineInRange(text, start, end) {
     for (var i = start; i < end; ++i) {
@@ -438,8 +575,16 @@
     return false;
   } // Note: this function doesn't ignore leading comments unlike isNextLineEmpty
 
+  /**
+   * @template N
+   * @param {string} text
+   * @param {N} node
+   * @param {(node: N) => number} locStart
+   */
+
 
   function isPreviousLineEmpty(text, node, locStart) {
+    /** @type {number | false} */
     var idx = locStart(node) - 1;
     idx = skipSpaces(text, idx, {
       backwards: true
@@ -455,9 +600,18 @@
     });
     return idx !== idx2;
   }
+  /**
+   * @param {string} text
+   * @param {number} index
+   * @returns {boolean}
+   */
+
 
   function isNextLineEmptyAfterIndex(text, index) {
+    /** @type {number | false} */
     var oldIdx = null;
+    /** @type {number | false} */
+
     var idx = index;
 
     while (idx !== oldIdx) {
@@ -470,40 +624,87 @@
 
     idx = skipTrailingComment(text, idx);
     idx = skipNewline(text, idx);
-    return hasNewline(text, idx);
+    return idx !== false && hasNewline(text, idx);
   }
+  /**
+   * @template N
+   * @param {string} text
+   * @param {N} node
+   * @param {(node: N) => number} locEnd
+   * @returns {boolean}
+   */
+
 
   function isNextLineEmpty(text, node, locEnd) {
     return isNextLineEmptyAfterIndex(text, locEnd(node));
   }
+  /**
+   * @param {string} text
+   * @param {number} idx
+   * @returns {number | false}
+   */
+
 
   function getNextNonSpaceNonCommentCharacterIndexWithStartIndex(text, idx) {
+    /** @type {number | false} */
     var oldIdx = null;
+    /** @type {number | false} */
 
-    while (idx !== oldIdx) {
-      oldIdx = idx;
-      idx = skipSpaces(text, idx);
-      idx = skipInlineComment(text, idx);
-      idx = skipTrailingComment(text, idx);
-      idx = skipNewline(text, idx);
+    var nextIdx = idx;
+
+    while (nextIdx !== oldIdx) {
+      oldIdx = nextIdx;
+      nextIdx = skipSpaces(text, nextIdx);
+      nextIdx = skipInlineComment(text, nextIdx);
+      nextIdx = skipTrailingComment(text, nextIdx);
+      nextIdx = skipNewline(text, nextIdx);
     }
 
-    return idx;
+    return nextIdx;
   }
+  /**
+   * @template N
+   * @param {string} text
+   * @param {N} node
+   * @param {(node: N) => number} locEnd
+   * @returns {number | false}
+   */
+
 
   function getNextNonSpaceNonCommentCharacterIndex(text, node, locEnd) {
     return getNextNonSpaceNonCommentCharacterIndexWithStartIndex(text, locEnd(node));
   }
+  /**
+   * @template N
+   * @param {string} text
+   * @param {N} node
+   * @param {(node: N) => number} locEnd
+   * @returns {string}
+   */
+
 
   function getNextNonSpaceNonCommentCharacter(text, node, locEnd) {
-    return text.charAt(getNextNonSpaceNonCommentCharacterIndex(text, node, locEnd));
+    return text.charAt( // @ts-ignore => TBD: can return false, should we define a fallback?
+    getNextNonSpaceNonCommentCharacterIndex(text, node, locEnd));
   }
+  /**
+   * @param {string} text
+   * @param {number} index
+   * @param {SkipOptions=} opts
+   * @returns {boolean}
+   */
+
 
   function hasSpaces(text, index, opts) {
     opts = opts || {};
     var idx = skipSpaces(text, opts.backwards ? index - 1 : index, opts);
     return idx !== index;
   }
+  /**
+   * @param {{range?: [number, number], start?: number}} node
+   * @param {number} index
+   */
+
 
   function setLocStart(node, index) {
     if (node.range) {
@@ -512,6 +713,11 @@
       node.start = index;
     }
   }
+  /**
+   * @param {{range?: [number, number], end?: number}} node
+   * @param {number} index
+   */
+
 
   function setLocEnd(node, index) {
     if (node.range) {
@@ -604,6 +810,7 @@
         return true;
 
       case "MemberExpression":
+      case "OptionalMemberExpression":
         return startsWithNoLookaheadToken(node.object, forbidFunctionClassAndDoExpr);
 
       case "TaggedTemplateExpression":
@@ -615,6 +822,7 @@
         return startsWithNoLookaheadToken(node.tag, forbidFunctionClassAndDoExpr);
 
       case "CallExpression":
+      case "OptionalCallExpression":
         if (node.callee.type === "FunctionExpression") {
           // IIFEs are always already parenthesized
           return false;
@@ -649,6 +857,13 @@
 
     return node;
   }
+  /**
+   * @param {string} value
+   * @param {number} tabWidth
+   * @param {number=} startIndex
+   * @returns {number}
+   */
+
 
   function getAlignmentSize(value, tabWidth, startIndex) {
     startIndex = startIndex || 0;
@@ -668,6 +883,12 @@
 
     return size;
   }
+  /**
+   * @param {string} value
+   * @param {number} tabWidth
+   * @returns {number}
+   */
+
 
   function getIndentSize(value, tabWidth) {
     var lastNewlineIndex = value.lastIndexOf("\n");
@@ -679,15 +900,30 @@
     return getAlignmentSize( // All the leading whitespaces
     value.slice(lastNewlineIndex + 1).match(/^[ \t]*/)[0], tabWidth);
   }
+  /**
+   * @typedef {'"' | "'"} Quote
+   */
+
+  /**
+   *
+   * @param {string} raw
+   * @param {Quote} preferredQuote
+   * @returns {Quote}
+   */
+
 
   function getPreferredQuote(raw, preferredQuote) {
     // `rawContent` is the string exactly like it appeared in the input source
     // code, without its enclosing quotes.
     var rawContent = raw.slice(1, -1);
+    /** @type {{ quote: '"', regex: RegExp }} */
+
     var double = {
       quote: '"',
       regex: /"/g
     };
+    /** @type {{ quote: "'", regex: RegExp }} */
+
     var single = {
       quote: "'",
       regex: /'/g
@@ -714,6 +950,8 @@
     // the quotes on a DirectiveLiteral.
 
     var canChangeDirectiveQuotes = !rawContent.includes('"') && !rawContent.includes("'");
+    /** @type {Quote} */
+
     var enclosingQuote = options.parser === "json" ? '"' : options.__isInHtmlAttribute ? "'" : getPreferredQuote(raw, options.singleQuote ? "'" : '"'); // Directives are exact code unit sequences, which means that you can't
     // change the escape sequences they use.
     // See https://github.com/prettier/prettier/issues/1555
@@ -733,6 +971,13 @@
 
     return makeString(rawContent, enclosingQuote, !(options.parser === "css" || options.parser === "less" || options.parser === "scss" || options.embeddedInHtml));
   }
+  /**
+   * @param {string} rawContent
+   * @param {Quote} enclosingQuote
+   * @param {boolean=} unescapeUnnecessaryEscapes
+   * @returns {string}
+   */
+
 
   function makeString(rawContent, enclosingQuote, unescapeUnnecessaryEscapes) {
     var otherQuote = enclosingQuote === '"' ? "'" : '"'; // Matches _any_ escape and unescaped quotes (both single and double).
@@ -774,6 +1019,12 @@
     .replace(/(\.\d+?)0+(?=e|$)/, "$1") // Remove trailing dot.
     .replace(/\.(?=e|$)/, "");
   }
+  /**
+   * @param {string} str
+   * @param {string} target
+   * @returns {number}
+   */
+
 
   function getMaxContinuousCount(str, target) {
     var results = str.match(new RegExp("(".concat(escapeStringRegexp(target), ")+"), "g"));
@@ -833,6 +1084,11 @@
 
     return max + 1;
   }
+  /**
+   * @param {string} text
+   * @returns {number}
+   */
+
 
   function getStringWidth(text) {
     if (!text) {
@@ -844,7 +1100,7 @@
       return text.length;
     }
 
-    return stringWidth(text);
+    return stringWidth_1(text);
   }
 
   function hasIgnoreComment(path) {
@@ -1036,7 +1292,7 @@
   var concat$1 = docBuilders.concat,
       fill$1 = docBuilders.fill,
       cursor$1 = docBuilders.cursor;
-  /** @type {{[groupId: PropertyKey]: MODE}} */
+  /** @type {Record<symbol, typeof MODE_BREAK | typeof MODE_FLAT>} */
 
   var groupModeMap;
   var MODE_BREAK = 1;
@@ -1588,8 +1844,6 @@
             }
 
             break;
-
-          default:
         }
       }
     }
@@ -1991,4 +2245,4 @@
 
   Object.defineProperty(exports, '__esModule', { value: true });
 
-}));
+})));
